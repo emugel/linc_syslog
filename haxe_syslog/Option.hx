@@ -1,4 +1,4 @@
-package syslog;
+package haxe_syslog;
 
 /**
  * Options as used with Syslog.open().

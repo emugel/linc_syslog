@@ -4,7 +4,7 @@
 
 namespace linc {
 
-    namespace syslog {
+    namespace ns_syslog {
 
         void closelog(void) { ::closelog(); }
         void openlog(const char *__ident, int __option, int __facility) {

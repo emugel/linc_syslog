@@ -1,8 +1,8 @@
-package syslog;
+package haxe_syslog;
 
-import syslog.Facility;
-import syslog.Option;
-import syslog.Priority;
+import haxe_syslog.Facility;
+import haxe_syslog.Option;
+import haxe_syslog.Priority;
 
 @:keep
 @:include('linc_syslog.h')
@@ -46,7 +46,7 @@ extern class Syslog {
      *  LOG_UUCP	   UUCP subsystem
      *
     **/
-    public static function open(ident:String, options:Array<Option>, facility:syslog.Facility) : Void {
+    public static function open(ident:String, options:Array<Option>, facility:Facility) : Void {
         if (options == null) option = [];
         var opt = 0;
         for (e in options) opt |= switch e {
@@ -70,8 +70,8 @@ extern class Syslog {
      *                   preceding openlog() call, a default of LOG_USER is
      *                   employed.
     **/
-    @:native("linc::syslog::_syslog")
-    static function syslog(pri:Priority, msg:String, facility:Facility=0) : Void;
+    @:native("linc::ns_syslog::_syslog")
+    static function log(pri:Priority, msg:String, facility:Facility=0) : Void;
 
     /**
      * Set minimum log level. All levels with a less priority will not be
@@ -94,15 +94,15 @@ extern class Syslog {
      * closelog()  closes  the file descriptor being used to write to the
      * system logger.  The use of closelog() is optional.
      */
-    @:native("linc::syslog::closelog")
+    @:native("linc::ns_syslog::closelog")
     static function close() : Void;
 
 
     // --- not to use directly ---v
-    @:native("linc::syslog::openlog")
-    private static function _open(ident:String, option:Int, facility:syslog.Facility) : Void;
+    @:native("linc::ns_syslog::openlog")
+    private static function _open(ident:String, option:Int, facility:Facility) : Void;
 
-    @:native("linc::syslog::setlogmask")
+    @:native("linc::ns_syslog::setlogmask")
     private static function _setLogMask(mask:Int) : Int;
 
 }

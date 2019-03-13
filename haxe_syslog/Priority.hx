@@ -1,4 +1,4 @@
-package syslog;
+package haxe_syslog;
 
 /*
  * priorities/facilities are encoded into a single 32-bit quantity, where the
