@@ -3,14 +3,11 @@ package haxe_syslog;
 import haxe_syslog.Facility;
 import haxe_syslog.Option;
 import haxe_syslog.Priority;
+import haxe_syslog.ExternSyslog;
 
 @:keep
 @:include('linc_syslog.h')
-#if !display
-@:build(linc.Linc.touch())
-@:build(linc.Linc.xml('syslog'))
-#end
-extern class Syslog {
+class Syslog {
 
     public static inline var facilitiesCount:Int = 24;
     public static inline var facilityMask:Int = 0x03f8; // mask to extract facility part
@@ -47,17 +44,17 @@ extern class Syslog {
      *
     **/
     public static function open(ident:String, options:Array<Option>, facility:Facility) : Void {
-        if (options == null) option = [];
+        if (options == null) options = [];
         var opt = 0;
         for (e in options) opt |= switch e {
             case LogPid       : 0x01;
             case LogCons      : 0x02;
             case LogODelay    : 0x04;
             case LogNDelay    : 0x08;
-            // case LogNoWait : 0x10;   // deprecated
+            // case LogNoWait : 0x10;   // deprecated in .h, better not include it
             case LogPError    : 0x20;
         }
-        _open(ident, opt, facility);
+        ExternSyslog._open(ident, opt, facility);
     }
 
 
@@ -70,10 +67,10 @@ extern class Syslog {
      *                   preceding openlog() call, a default of LOG_USER is
      *                   employed.
     **/
-    static function log(pri:Priority, msg:String, faci:Facility=0) : Void {
-        var p : Int = pri;
-        var f : Int = faci;
-        _syslog(p | f, msg); 
+    public static function syslog(pri:Priority, msg:String, faci:Facility=0) : Void {
+        var p : Int = cast pri;
+        var f : Int = cast faci;
+        ExternSyslog._syslog(p | f, msg); 
     }
 
     /**
@@ -86,29 +83,18 @@ extern class Syslog {
      * @endexample
      */
     public static function logUpTo(pri:Priority) : Int {
-        if (pri < 0 || pri > 7) {
+        if (cast (pri, Int) < 0 || cast(pri, Int) > 7) {
             trace("logUpTo: invalid value " + pri);
-            return setLogMask(0);   // don't change anything
+            return ExternSyslog._setLogMask(0);   // don't change anything
         }
-        return setLogMask((1 << ((pri)+1)) - 1);
+        return ExternSyslog._setLogMask((1 << (cast(pri, Int)+1)) - 1);
     }
 
     /** 
      * closelog()  closes  the file descriptor being used to write to the
      * system logger.  The use of closelog() is optional.
      */
-    @:native("linc::ns_syslog::closelog")
-    static function close() : Void;
-
-
-    // --- not to use directly ---v
-    @:native("linc::ns_syslog::openlog")
-    private static function _open(ident:String, option:Int, facility:Facility) : Void;
-
-    @:native("linc::ns_syslog::setlogmask")
-    private static function _setLogMask(mask:Int) : Int;
-
-    @:native("linc::ns_syslog::_syslog")
-    private static function _syslog(pri:Int, msg:String) : Void;
+    public static function close() : Void
+        ExternSyslog._close();
 
 }
