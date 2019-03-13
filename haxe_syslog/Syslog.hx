@@ -65,13 +65,16 @@ extern class Syslog {
      * syslog() generates a log message, which will be distributed by syslogd(8).
      * @param (Priority)
      * @param (String msg)
-     * @param (Facility) If no facility value is ORed into priority, then the default value
-     *                   set  by	openlog() is used, or, if there was no
+     * @param (Facility) If no facility value is OR-ed into priority, then the default value
+     *                   set by	openlog() is used, or, if there was no
      *                   preceding openlog() call, a default of LOG_USER is
      *                   employed.
     **/
-    @:native("linc::ns_syslog::_syslog")
-    static function log(pri:Priority, msg:String, facility:Facility=0) : Void;
+    static function log(pri:Priority, msg:String, faci:Facility=0) : Void {
+        var p : Int = pri;
+        var f : Int = faci;
+        _syslog(p | f, msg); 
+    }
 
     /**
      * Set minimum log level. All levels with a less priority will not be
@@ -104,5 +107,8 @@ extern class Syslog {
 
     @:native("linc::ns_syslog::setlogmask")
     private static function _setLogMask(mask:Int) : Int;
+
+    @:native("linc::ns_syslog::_syslog")
+    private static function _syslog(pri:Int, msg:String) : Void;
 
 }
