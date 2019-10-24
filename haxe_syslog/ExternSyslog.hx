@@ -4,6 +4,7 @@ import haxe_syslog.Facility;
 import haxe_syslog.Option;
 import haxe_syslog.Priority;
 
+#if cpp
 @:keep
 @:include('linc_syslog.h')
 #if !display
@@ -25,3 +26,4 @@ extern class ExternSyslog {
     static function _syslog(pri:Int, msg:String) : Void;
 
 }
+#end

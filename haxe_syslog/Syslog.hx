@@ -30,6 +30,7 @@ class Syslog {
      *                       different facilities will be handled differently.
     **/
     public static function open(ident:String, options:Array<Option>, facility:Facility) : Void {
+#if cpp
         if (options == null) options = [];
         var opt = 0;
         for (e in options) opt |= switch e {
@@ -41,6 +42,7 @@ class Syslog {
             case PError    : 0x20;
         }
         ExternSyslog._open(ident, opt, facility);
+#end
     }
 
     /**
@@ -70,9 +72,11 @@ class Syslog {
      *                   employed.
     **/
     public static function syslog(pri:Priority, msg:String, faci:Facility=0) : Void {
+#if cpp
         var p : Int = cast pri;
         var f : Int = cast faci;
         ExternSyslog._syslog(p | f, msg); 
+#end
     }
 
 
@@ -86,18 +90,23 @@ class Syslog {
      * @endexample
      */
     public static function logUpTo(pri:Priority) : Int {
+#if cpp
         if (cast (pri, Int) < 0 || cast(pri, Int) > 7) {
             trace("logUpTo: invalid value " + pri);
             return ExternSyslog._setLogMask(0);   // don't change anything
         }
         return ExternSyslog._setLogMask((1 << (cast(pri, Int)+1)) - 1);
+#end
     }
 
     /** 
      * close() will close the file descriptor being used to write to the
      * system logger. The use of close() is optional.
      */
-    public static function close() : Void
+    public static function close() : Void {
+#if cpp
         ExternSyslog._close();
+#end
+    }
 
 }

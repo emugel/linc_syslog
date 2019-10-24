@@ -1,3 +1,9 @@
+On the code itself, outside of the original linc template:
+
+    public domain
+
+On the original linc template:
+
 The MIT License (MIT)
 
 Copyright (c) 2015 Sven Bergström   
