@@ -96,6 +96,8 @@ class Syslog {
             return ExternSyslog._setLogMask(0);   // don't change anything
         }
         return ExternSyslog._setLogMask((1 << (cast(pri, Int)+1)) - 1);
+#else 
+        return 0;
 #end
     }
 
